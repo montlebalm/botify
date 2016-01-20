@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/montlebalm/montys-muffins.git"
+    "url": "git+https://github.com/montlebalm/botify.git"
   },
   "author": "Chris Montrois",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/montlebalm/montys-muffins/issues"
+    "url": "https://github.com/montlebalm/botify/issues"
   },
-  "homepage": "https://github.com/montlebalm/montys-muffins#readme",
+  "homepage": "https://github.com/montlebalm/botify#readme",
   "dependencies": {
     "body-parser": "^1.14.1",
     "botkit": "0.0.5",

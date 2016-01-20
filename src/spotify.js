@@ -16,6 +16,11 @@ module.exports = {
     var refresh_token = db.refresh_token.get(team_id, user_id);
     client.setRefreshToken(access_token);
 
+    console.log('access_token', access_token);
+    console.log('refresh_token', refresh_token);
+
+    client.refreshAccessToken();
+
     return client;
   },
   client: client,

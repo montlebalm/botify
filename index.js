@@ -14,10 +14,6 @@ var controller = Botkit.slackbot({
   scopes: ['bot', 'commands'],
 });
 
-// ----------------------------------------------------------------------------
-// Create Botkit Server
-// ----------------------------------------------------------------------------
-
 controller.setupWebserver(process.env.PORT || 8080, function(err, webserver) {
   controller.createWebhookEndpoints(controller.webserver);
 
@@ -35,10 +31,11 @@ controller.setupWebserver(process.env.PORT || 8080, function(err, webserver) {
 });
 
 // ----------------------------------------------------------------------------
-// Listen for slash commands
+// Event listeners
 // ----------------------------------------------------------------------------
 
-controller.on('slash_command', require('./src/slash_commands'));
+controller.on('slash_command', require('./src/events/slash_command'));
+controller.on('channel_joined', require('./src/events/channel_joined'));
 
 // ----------------------------------------------------------------------------
 // Listen to messages

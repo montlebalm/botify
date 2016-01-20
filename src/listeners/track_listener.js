@@ -21,21 +21,16 @@ var spotifyTrackUri = require('../utils/spotify_track_uri');
  */
 module.exports = function(bot, message) {
   var team_id = message.team;
-  var user_id = message.user;
+  var user_id = process.env.SPOTIFY_USERNAME;
   var channel_id = message.channel;
 
-  var spotifyClient = spotify.auth(team_id, user_id);
-  spotifyClient.refreshAccessToken();
-
-  var playlist_id = db.playlist.get(team_id, user_id, channel_id);
-
+  var playlist_id = db.playlist.get(team_id, channel_id);
   if (!playlist_id) return;
 
-  var spotify_user = db.spotify_username.get(team_id, user_id);
   var track_id = message.match[1];
   var track_uri = spotifyTrackUri(track_id);
 
-  spotifyClient.addTracksToPlaylist(spotify_user, playlist_id, [track_uri]).then(function(data) {
+  spotify.auth(team_id, user_id).addTracksToPlaylist(user_id, playlist_id, [track_uri]).then(function(data) {
     bot.reply(message, 'Added the track!');
   }).catch(function(err) {
     console.log('Add track error:', err);

@@ -17,12 +17,17 @@ module.exports = function(req, res) {
   var user_id = state_parts[1];
 
   spotify.client.authorizationCodeGrant(code).then(function(data) {
-    db.access_token.set(team_id, user_id, data.body.access_token);
-    db.refresh_token.set(team_id, user_id, data.body.refresh_token);
+    var access_token = data.body.access_token;
+    var refresh_token = data.body.refresh_token;
+    db.access_token.set(team_id, user_id, access_token);
+    db.refresh_token.set(team_id, user_id, refresh_token);
+
+    console.log('auth grant user_id:', user_id);
 
     spotify.auth(team_id, user_id).getMe().then(function(data) {
       var spotify_username = data.body.id;
       db.spotify_username.set(team_id, user_id, spotify_username);
+
       res.sendStatus(200).send('Success!');
     }).catch(function(err) {
       console.log('Spotify user error:', err);
