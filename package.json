@@ -1,0 +1,30 @@
+{
+  "name": "botify",
+  "version": "0.0.1",
+  "description": "Who knows",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/montlebalm/montys-muffins.git"
+  },
+  "author": "Chris Montrois",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/montlebalm/montys-muffins/issues"
+  },
+  "homepage": "https://github.com/montlebalm/montys-muffins#readme",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "botkit": "0.0.5",
+    "botkit-storage-mongo": "^1.0.2",
+    "dotenv": "^1.2.0",
+    "express": "^4.13.3",
+    "lodash": "^3.10.1",
+    "mongodb": "^1.4.39",
+    "spotify-web-api-node": "^2.2.0"
+  },
+  "devDependencies": {}
+}
