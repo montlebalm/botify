@@ -23,8 +23,8 @@ module.exports = function(bot, message) {
   var team_id = message.team;
   var user_id = process.env.SPOTIFY_USERNAME;
   var channel_id = message.channel;
-
   var playlist_id = db.playlist.get(team_id, channel_id);
+
   if (!playlist_id) {
     console.log('Tried to add a track, but the playlist doesn\'t exist');
     return;

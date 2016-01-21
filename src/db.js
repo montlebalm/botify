@@ -46,31 +46,6 @@ module.exports = {
       set(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_id', value);
     },
   },
-  spotify_username: {
-    get: function(team_id, user_id) {
-      return getUser(team_id, user_id, 'spotify_username');
-    },
-    set: function(team_id, user_id, value) {
-      setUser(team_id, user_id, 'spotify_username', value);
-    },
-  },
-  spotify_auth_code: {
-    get: function(team_id, user_id) {
-      if (user_id === process.env.SPOTIFY_USERNAME) {
-        return get(team_id, 'bot_spotify_auth_code');
-      }
-
-      return getUser(team_id, user_id, 'spotify_auth_code');
-    },
-    set: function(team_id, user_id, value) {
-      if (user_id === process.env.SPOTIFY_USERNAME) {
-        set(team_id, 'bot_spotify_auth_code', value);
-        return;
-      }
-
-      setUser(team_id, user_id, 'spotify_auth_code', value);
-    },
-  },
 };
 
 function get(team_id, path) {

@@ -26,25 +26,17 @@ module.exports = function(bot, message) {
   }
 
   var command_args = text.split(/\s+/);
-  var command = command_args.shift();
-
-  // Auth the bot with Spotify
-  if (command === 'auth') {
-    require('../commands/auth')(bot, message);
-    return;
-  }
-
+  var command = command_args[0];
   var team_id = message.team_id;
   var user_id = message.user_id;
   var access_token = db.access_token.get(team_id, user_id);
 
-  if (!access_token) {
-    var auth_url = authUrl(team_id, user_id);
-    bot.replyPrivate(message, 'You need to authorize with Spotify first. Try this: ' + auth_url);
+  if (!access_token && command !== 'link' && command !== 'auth') {
+    bot.replyPrivate(message, 'You need to authorize with Spotify first. Try `/botify link <YOUR SPOTIFY USERNAME>`');
   } else {
     try {
       // Automatically match the command with a handler
-      require('../commands/' + command)(bot, message, command_args);
+      require('../commands/' + command)(bot, message);
     } catch (err) {
       console.log('No command:', err);
       bot.replyPrivate(message, 'Right like I\'m just going to "' + command + '" just because you said so');
