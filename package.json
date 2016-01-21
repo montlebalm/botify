@@ -4,7 +4,7 @@
   "description": "Who knows",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/**/*.test.js"
+    "dev": "nodemon --ignore db.json"
   },
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/montlebalm/botify/issues"
   },
-  "homepage": "https://github.com/montlebalm/botify#readme",
+  "homepage": "https://github.com/montlebalm/botify",
   "dependencies": {
     "body-parser": "^1.14.1",
     "botkit": "0.0.5",
