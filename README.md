@@ -1,5 +1,19 @@
 # Botify
 
+Botify is a Slack app that helps you create and update collaborative Spotify
+playlists. It will automatically create a playlist for every channel the bot
+(@botify) is invited to and will watch the conversation for Spotify song links.
+
+Users can follow the playlists on their own Spotify account by using the
+`/botify subscribe` command.
+
+## Commands
+
+`/botify auth` - Authenticate the bot user with Spotify. You should only have to
+run this once.
+
+`/botify subscribe` - Follow the current channel's collaborative playlist on
+Spotify.
 
 ## Running locally
 
@@ -60,5 +74,6 @@ npm run dev
 
 ## TODO
 
+- [ ] Make sure users can follow playlists
 - [ ] Refactor flat file into persistent data store
 - [ ] Add synchronous streaming

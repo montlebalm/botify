@@ -10,9 +10,10 @@ module.exports = function(bot, message, args) {
 
   spotify.auth(team_id, user_id).then(function(client) {
     client.followPlaylist(spotify_user, playlist_id, { public: true }).then(function(data) {
+      console.log('followPlaylist success:', data);
       bot.replyPrivate(message, 'Ok!');
     }).catch(function(err) {
-      console.log('Follow playlist error:', err);
+      console.log('followPlaylist error:', err);
       bot.replyPrivate(message, 'Error: ' + err);
     });
   });
