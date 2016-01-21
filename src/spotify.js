@@ -8,7 +8,14 @@ module.exports = {
   client: createClient(),
 };
 
-function createClient() {
+function createClient(access_token, refresh_token) {
+  if (access_token) {
+    return new SpotifyWebApi({
+      accessToken: access_token,
+      refreshToken: refresh_token,
+    });
+  }
+
   return new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
@@ -17,44 +24,18 @@ function createClient() {
 }
 
 function auth(team_id, user_id) {
-  var client = createClient();
-
-  console.log('auth as team: "'+team_id+'" user: "'+user_id+'"');
-
   return new Promise(function(resolve, reject) {
     var access_token = db.access_token.get(team_id, user_id);
     var refresh_token = db.refresh_token.get(team_id, user_id);
-    client.setAccessToken(access_token);
-    client.setRefreshToken(refresh_token);
-
-    client.refreshAccessToken().then(function(data) {
-      console.log('refreshAccessToken success:', data);
-      var access_token = data.body.access_token;
-      var refresh_token = data.body.refresh_token;
-
-      if (access_token) {
-        client.setAccessToken(access_token);
-        db.access_token.set(team_id, user_id, access_token);
-      }
-
-      if (refresh_token) {
-        db.refresh_token.set(team_id, user_id, refresh_token);
-        client.setRefreshToken(refresh_token);
-      }
-
-      resolve(client);
-    }).catch(function(err) {
-      console.log('refreshAccessToken error:', err);
-      reject(err);
-    });
+    console.log('auth access_token for', user_id, 'is', access_token);
+    var client = createClient(access_token, refresh_token);
+    resolve(client);
   });
 }
 
-function authCodeGrant(code) {
-  var client = createClient();
-
-  return client.authorizationCodeGrant(code).then(function(data) {
-    console.log('authorizationCodeGrant success:', data);
+function authCodeGrant(team_id, user_id, code) {
+  return createClient().authorizationCodeGrant(code).then(function(data) {
+    console.log('authorizationCodeGrant success:', user_id, data);
     var access_token = data.body.access_token;
     var refresh_token = data.body.refresh_token;
     db.access_token.set(team_id, user_id, access_token);

@@ -15,11 +15,8 @@ module.exports = function(req, res) {
     return;
   }
 
-  // Auth the code and get our tokens
-  spotify.authCodeGrant(code).then(function(data) {
-    spotify.auth(team_id, user_id).then(function() {
-      res.sendStatus(200).send('Success!');
-    });
+  spotify.authCodeGrant(team_id, user_id, code).then(function() {
+    res.sendStatus(200);
   }).catch(function(err) {
     res.sendStatus(500);
   });

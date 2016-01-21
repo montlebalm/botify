@@ -9,11 +9,13 @@ module.exports = function(bot, message, args) {
   var bot_spotify_username = process.env.SPOTIFY_USERNAME;
 
   spotify.auth(team_id, user_id).then(function(client) {
-    client.followPlaylist(bot_spotify_username, playlist_id, { public: true }).then(function(data) {
-      console.log('followPlaylist success:', data);
-      bot.replyPrivate(message, 'Subscribed!');
+    console.log('unfollowPlaylist:', bot_spotify_username, playlist_id);
+
+    client.unfollowPlaylist(bot_spotify_username, playlist_id).then(function(data) {
+      console.log('unfollowPlaylist success:', data);
+      bot.replyPrivate(message, 'Unsubscribed!');
     }).catch(function(err) {
-      console.log('followPlaylist error:', err);
+      console.log('unfollowPlaylist error:', err);
       bot.replyPrivate(message, 'Error: ' + err);
     });
   });
