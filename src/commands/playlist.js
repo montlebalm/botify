@@ -1,21 +1,22 @@
 var playlistName = require('../utils/playlist_name');
 var spotify = require('../spotify');
 
-module.exports = function(bot, message) {
-  var team_id = bot.team_info.id;
-  var channel_id = message.channel.id;
+module.exports = function(bot, message, args) {
+  var team_id = message.team_id;
+  var channel_id = message.channel_id;
   var team_name = bot.team_info.name;
-  var channel_name = message.channel.name;
+  var channel_name = message.channel_name;
   var playlist_name = playlistName(team_name, channel_name);
 
+  // TODO: check for existing playlist
+
   spotify.createPlaylist(team_id, channel_id, playlist_name).then(function(data) {
-    bot.say({
+    bot.replyPrivate(message, {
       attachments: [{
-        color: '#1ed761',
+        color: '#dddddd',
         text: data.body.uri,
       }],
-      channel: channel_id,
-      text: 'Thanks for inviting me! I created a playlist called *' + data.body.name + '* for this channel',
+      text: 'The playlist for this channel is called *' + data.body.name + '*',
     });
   });
 };

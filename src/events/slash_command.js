@@ -27,15 +27,15 @@ module.exports = function(bot, message) {
 
   var command_args = text.split(/\s+/);
   var command = command_args.shift();
-  var team_id = message.team_id;
-  var user_id = message.user_id;
-  var access_token = db.access_token.get(team_id, user_id);
+  // var team_id = message.team_id;
+  // var user_id = message.user_id;
+  // var access_token = db.access_token.get(team_id, user_id);
 
-  if (!access_token && command !== 'auth') {
-    console.log('User', user_id, 'is not authenticated');
-    var auth_url = authUrl(team_id, user_id);
-    bot.replyPrivate(message, 'Almost ready! First you need to tell Spotify that it\'s ok for me to make playlists for you. Use this link:\n\n' + auth_url);
-  } else {
+  // if (!access_token && command !== 'auth') {
+  //   console.log('User', user_id, 'is not authenticated');
+  //   var auth_url = authUrl(team_id, user_id);
+  //   bot.replyPrivate(message, 'Almost ready! First you need to tell Spotify that it\'s ok for me to make playlists for you. Use this link:\n\n' + auth_url);
+  // } else {
     try {
       // Automatically match the command with a handler
       require('../commands/' + command)(bot, message, command_args);
@@ -43,5 +43,5 @@ module.exports = function(bot, message) {
       console.log('No command:', err);
       bot.replyPrivate(message, 'Right like I\'m just going to "' + command + '" just because you said so');
     }
-  }
+  // }
 }
