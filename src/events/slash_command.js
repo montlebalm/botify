@@ -1,5 +1,5 @@
-var db = require('../db');
 var authUrl = require('../utils/auth_url');
+var db = require('../db');
 
 /**
  * Example message:
@@ -46,6 +46,7 @@ module.exports = function(bot, message) {
       // Automatically match the command with a handler
       require('../commands/' + command)(bot, message, command_args);
     } catch (err) {
+      console.log('No command:', err);
       bot.replyPrivate(message, 'Right like I\'m just going to "' + command + '" just because you said so');
     }
   }

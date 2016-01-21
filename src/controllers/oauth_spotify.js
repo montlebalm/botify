@@ -16,25 +16,28 @@ module.exports = function(req, res) {
   var team_id = state_parts[0];
   var user_id = state_parts[1];
 
+  db.spotify_auth_code.set(team_id, user_id, code);
+
+  // Auth the code and get our tokens
   spotify.client.authorizationCodeGrant(code).then(function(data) {
     var access_token = data.body.access_token;
     var refresh_token = data.body.refresh_token;
     db.access_token.set(team_id, user_id, access_token);
     db.refresh_token.set(team_id, user_id, refresh_token);
 
-    console.log('auth grant user_id:', user_id);
-
-    spotify.auth(team_id, user_id).getMe().then(function(data) {
-      var spotify_username = data.body.id;
-      db.spotify_username.set(team_id, user_id, spotify_username);
-
-      res.sendStatus(200).send('Success!');
-    }).catch(function(err) {
-      console.log('Spotify user error:', err);
-      res.sendStatus(500).send('Spotify user error: ' + err);
+    spotify.auth(team_id, user_id).then(function(client) {
+      // Get the user info
+      client.getMe().then(function(data) {
+        var spotify_username = data.body.id;
+        db.spotify_username.set(team_id, user_id, spotify_username);
+        res.sendStatus(200).send('Success!');
+      }).catch(function(err) {
+        console.log('getMe error:', err);
+        res.sendStatus(500).send('getMe error: ' + err);
+      });
     });
   }).catch(function(err) {
-    console.log('err', err);
-    res.sendStatus(500).send('Spotify OAuth Error: ' + err);
+    console.log('authorizationCodeGrant error:', err);
+    res.sendStatus(500).send('authorizationCodeGrant error: ' + err);
   });
 };

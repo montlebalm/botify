@@ -2,26 +2,31 @@ var SpotifyWebApi = require('spotify-web-api-node');
 
 var db = require('./db');
 
-var client = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.HOST + 'oauth_spotify',
-});
-
 module.exports = {
-  auth: function(team_id, user_id) {
-    var access_token = db.access_token.get(team_id, user_id);
-    client.setAccessToken(access_token);
+  auth: function(team_id, user_id, code) {
+    var client = createClient();
 
-    var refresh_token = db.refresh_token.get(team_id, user_id);
-    client.setRefreshToken(access_token);
+    return new Promise(function(resolve, reject) {
+      var access_token = db.access_token.get(team_id, user_id);
+      var refresh_token = db.refresh_token.get(team_id, user_id);
+      client.setAccessToken(access_token);
+      client.setRefreshToken(refresh_token);
 
-    console.log('access_token', access_token);
-    console.log('refresh_token', refresh_token);
-
-    client.refreshAccessToken();
-
-    return client;
+      client.refreshAccessToken().then(function() {
+        resolve(client);
+      }).catch(function(err) {
+        console.log('refreshAccessToken error:', err);
+        reject(err);
+      });
+    });
   },
-  client: client,
+  client: createClient(),
 };
+
+function createClient() {
+  return new SpotifyWebApi({
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    redirectUri: process.env.HOST + 'oauth_spotify',
+  });
+}

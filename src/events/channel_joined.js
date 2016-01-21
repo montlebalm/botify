@@ -16,15 +16,14 @@ module.exports = function(bot, message) {
   var channel_name = message.channel.name;
   var playlist_name = playlistName(team_name, channel_name);
   var user_id = process.env.SPOTIFY_USERNAME;
-  var playlist_options = { public: true };
 
-  spotify.auth(team_id, user_id).createPlaylist(user_id, playlist_name, playlist_options).then(function(data) {
-    console.log('Playlist created:', data.body);
-    var playlist_id = data.body.id;
-    db.playlist.set(team_id, channel_id, playlist_id);
-    bot.replyPrivate(message, 'Created "'+playlist_name+'" playlist. It could take up to 3 minutes for it to appear in Spotify.');
-  }).catch(function(err) {
-    console.log('Playlist error:', err);
-    bot.replyPrivate(message, 'Error: ' + err);
+  spotify.auth(team_id, user_id).then(function(client) {
+    client.createPlaylist(user_id, playlist_name, { public: true }).then(function(data) {
+      console.log('createPlaylist success:', data.body);
+      var playlist_id = data.body.id;
+      db.playlist.set(team_id, channel_id, playlist_id);
+    }).catch(function(err) {
+      console.log('createPlaylist error:', err);
+    });
   });
 };

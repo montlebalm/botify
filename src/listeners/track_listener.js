@@ -25,15 +25,20 @@ module.exports = function(bot, message) {
   var channel_id = message.channel;
 
   var playlist_id = db.playlist.get(team_id, channel_id);
-  if (!playlist_id) return;
+  if (!playlist_id) {
+    console.log('Tried to add a track, but the playlist doesn\'t exist');
+    return;
+  }
 
   var track_id = message.match[1];
   var track_uri = spotifyTrackUri(track_id);
 
-  spotify.auth(team_id, user_id).addTracksToPlaylist(user_id, playlist_id, [track_uri]).then(function(data) {
-    bot.reply(message, 'Added the track!');
-  }).catch(function(err) {
-    console.log('Add track error:', err);
-    bot.replyPrivate(message, 'Add track error: ' + err);
+  spotify.auth(team_id, user_id).then(function(client) {
+    client.addTracksToPlaylist(user_id, playlist_id, [track_uri]).then(function(data) {
+      bot.reply(message, 'Added!');
+    }).catch(function(err) {
+      console.log('Add track error:', err);
+      bot.replyPrivate(message, 'Add track error: ' + err);
+    });
   });
 };

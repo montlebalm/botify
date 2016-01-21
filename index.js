@@ -28,6 +28,15 @@ controller.setupWebserver(process.env.PORT || 8080, function(err, webserver) {
 
   // Spotify OAuth endpoint
   webserver.get('/oauth_spotify', require('./src/controllers/oauth_spotify'));
+
+  // Get playback status
+  webserver.get('/status', function(req, res) {
+    var data = {
+      status: 'playing',
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(data));
+  });
 });
 
 // ----------------------------------------------------------------------------
