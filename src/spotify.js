@@ -8,20 +8,36 @@ module.exports = {
   client: createClient(),
   createPlaylist: function(team_id, channel_id, playlist_name) {
     return new Promise(function(resolve, reject) {
-      var playlist_id = db.playlist.get(team_id, channel_id);
-      var bot_spotify_username = process.env.SPOTIFY_USERNAME;
+      var playlist_id = db.playlist_id.get(team_id, channel_id);
 
-      // if (playlist_id) {
-      //
-      //   resolve();
-      //   return;
-      // }
+      // See if it has already been created
+      if (playlist_id) {
+        var existing_playlist_name = db.playlist_name.get(team_id, channel_id);
+        var existing_playlist_uri = db.playlist_uri.get(team_id, channel_id);
+        // TODO: would be better not to have to fake this so badly
+        resolve({
+          body: {
+            already_exists: true,
+            name: existing_playlist_name,
+            uri: existing_playlist_uri,
+          }
+        });
+        return;
+      }
+
+      var bot_spotify_username = process.env.SPOTIFY_USERNAME;
 
       auth(team_id, bot_spotify_username).then(function(client) {
         client.createPlaylist(bot_spotify_username, playlist_name, { public: true }).then(function(data) {
           console.log('createPlaylist success:', data.body);
           var playlist_id = data.body.id;
-          db.playlist.set(team_id, channel_id, playlist_id);
+          db.playlist_id.set(team_id, channel_id, playlist_id);
+
+          var playlist_name = data.body.name;
+          db.playlist_name.set(team_id, channel_id, playlist_name);
+
+          var playlist_uri = data.body.uri;
+          db.playlist_uri.set(team_id, channel_id, playlist_uri);
 
           resolve(data);
         }).catch(function(err) {

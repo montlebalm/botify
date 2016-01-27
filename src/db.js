@@ -38,12 +38,36 @@ module.exports = {
       setUser(team_id, user_id, 'spotify_refresh_token', value);
     },
   },
-  playlist: {
+  playlist_id: {
     get: function(team_id, slack_channel_id) {
       return get(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_id');
     },
     set: function(team_id, slack_channel_id, value) {
       set(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_id', value);
+    },
+  },
+  playlist_name: {
+    get: function(team_id, slack_channel_id) {
+      return get(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_name');
+    },
+    set: function(team_id, slack_channel_id, value) {
+      set(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_name', value);
+    },
+  },
+  playlist_uri: {
+    get: function(team_id, slack_channel_id) {
+      return get(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_uri');
+    },
+    set: function(team_id, slack_channel_id, value) {
+      set(team_id, 'channels.'+slack_channel_id+'.spotify_playlist_uri', value);
+    },
+  },
+  bot_spotify_username: {
+    get: function(team_id) {
+      return get(team_id, 'bot_spotify_username');
+    },
+    set: function(team_id, value) {
+      set(team_id, 'bot_spotify_username', value);
     },
   },
 };

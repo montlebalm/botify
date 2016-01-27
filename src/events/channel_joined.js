@@ -9,13 +9,20 @@ module.exports = function(bot, message) {
   var playlist_name = playlistName(team_name, channel_name);
 
   spotify.createPlaylist(team_id, channel_id, playlist_name).then(function(data) {
+    console.log('channel playlist', data);
+
+    var text = 'Thanks for inviting me! I created a playlist called *' + data.body.name + '* for this channel';
+    if (data.body.already_exists) {
+      text = 'Happy to be here. It looks like we already have a playlist for this channel called *' + data.body.name + '*';
+    }
+
     bot.say({
       attachments: [{
         color: '#1ed761',
         text: data.body.uri,
       }],
       channel: channel_id,
-      text: 'Thanks for inviting me! I created a playlist called *' + data.body.name + '* for this channel',
+      text: text,
     });
   });
 };

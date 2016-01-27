@@ -8,8 +8,6 @@ module.exports = function(bot, message, args) {
   var channel_name = message.channel_name;
   var playlist_name = playlistName(team_name, channel_name);
 
-  // TODO: check for existing playlist
-
   spotify.createPlaylist(team_id, channel_id, playlist_name).then(function(data) {
     bot.replyPrivate(message, {
       attachments: [{

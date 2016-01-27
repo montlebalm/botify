@@ -12,5 +12,5 @@ module.exports = function(bot, message) {
   }
 
   var auth_url = authUrl(team_id, user_id);
-  bot.replyPrivate(message, 'First, you\'ll need to authenticate me with Spotify with this link:\n\n' + auth_url);
+  bot.replyPrivate(message, 'First, you\'ll need to authenticate me with Spotify with this link. You\'ll only need to do this once.\n\n' + auth_url);
 };
