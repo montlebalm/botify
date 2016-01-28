@@ -12,7 +12,7 @@ var controller = Botkit.slackbot({
 }).configureSlackApp({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
-  scopes: ['bot', 'commands', 'chat:write:bot', 'im:write', 'chat:write:user'],
+  scopes: ['bot', 'commands'],
 });
 
 // Create server
