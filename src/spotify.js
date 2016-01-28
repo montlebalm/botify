@@ -2,7 +2,7 @@ var SpotifyWebApi = require('spotify-web-api-node');
 
 var db = require('./db');
 
-module.exports = {
+var methods = {
   auth: auth,
   authCodeGrant: authCodeGrant,
   client: createClient(),
@@ -11,10 +11,10 @@ module.exports = {
 
     auth(team_id, bot_spotify_username).then(function(client) {
       client.getPlaylist(bot_spotify_username, playlist_id).then(function(data) {
-        console.log('playlist', data);
+        console.log('getPlaylist success:', data);
         resolve(data);
       }).catch(function(err) {
-        console.log('addTracksToPlaylist error:', err);
+        console.log('getPlaylist error:', err);
         reject(err);
       });
     });
@@ -25,6 +25,7 @@ module.exports = {
 
       auth(team_id, bot_spotify_username).then(function(client) {
         client.addTracksToPlaylist(bot_spotify_username, playlist_id, track_uris).then(function(data) {
+          console.log('addTracksToPlaylist success:', data);
           resolve(data);
         }).catch(function(err) {
           console.log('addTracksToPlaylist error:', err);
@@ -40,18 +41,16 @@ module.exports = {
 
       // See if it has already been created
       if (playlist_id) {
-        auth(team_id, bot_spotify_username).then(function(client) {
-          client.getPlaylist(bot_spotify_username, playlist_name, { public: true }).then(function(data) {
-            var playlist_name = data.body.name;
-            var playlist_uri = data.body.uri;
+        methods.getPlaylist(team_id, playlist_id).then(function(data) {
+          var playlist_name = data.body.name;
+          var playlist_uri = data.body.uri;
 
-            resolve({
-              body: {
-                already_exists: true,
-                name: existing_playlist_name,
-                uri: existing_playlist_uri,
-              }
-            });
+          resolve({
+            body: {
+              already_exists: true,
+              name: playlist_name,
+              uri: playlist_uri,
+            }
           });
         });
 
@@ -74,6 +73,8 @@ module.exports = {
   },
 };
 
+module.exports = methods;
+
 function createClient(access_token, refresh_token) {
   if (access_token) {
     return new SpotifyWebApi({
@@ -93,7 +94,6 @@ function auth(team_id, user_id) {
   return new Promise(function(resolve, reject) {
     var access_token = db.access_token.get(team_id, user_id);
     var refresh_token = db.refresh_token.get(team_id, user_id);
-    console.log('auth access_token for', user_id, 'is', access_token);
     var client = createClient(access_token, refresh_token);
     var bot_spotify_username = db.bot_spotify_username.get(team_id);
 

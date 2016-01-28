@@ -56,4 +56,5 @@ controller.on('channel_joined', require('./src/events/channel_joined'));
 controller.on('create_bot', require('./src/events/create_bot'));
 
 // Listen for linked Spotify tracks
-controller.hears('https://open.spotify.com/track/(\\w+)', ['ambient'], require('./src/listeners/track_listener'));
+var track_patterns = ['https://open.spotify.com/track/(\\w+)', 'spotify:track:(\\w+)'];
+controller.hears(track_patterns, ['ambient'], require('./src/listeners/track_listener'));
