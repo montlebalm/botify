@@ -13,6 +13,8 @@ module.exports = function(bot, config) {
 
       trackBot.track(bot);
 
+      db.created_by_slack_user_id.set(team_id, config.createdBy);
+
       bot.startPrivateConversation({ user: config.createdBy }, function(err, convo) {
         if (err) {
           console.log('startPrivateConversation error:', err);
@@ -20,16 +22,16 @@ module.exports = function(bot, config) {
         }
 
         convo.say('Hi! I just need a few things before we can get started.');
-        console.log(1);
 
         convo.ask('Could you tell me the username of the Spotify account I should use for playlists?', [{
           pattern: '[\w-]+',
           callback: function(response, convo) {
             var team_id = response.team;
             var user_id = response.user;
+            var username = response.text.trim();
 
             // Save the username for later
-            db.bot_spotify_username.set(team_id, response.text);
+            db.bot_spotify_username.set(team_id, username);
 
             var auth_url = authUrl(team_id, user_id);
             convo.say('Great! Now you\'ll just need to help me authenticate that user with Spotify');
@@ -46,6 +48,8 @@ module.exports = function(bot, config) {
             convo.next();
           },
         }]);
+
+
       });
     });
   }

@@ -17,6 +17,8 @@ module.exports = function(req, res) {
 
   spotify.authCodeGrant(team_id, user_id, code).then(function() {
     res.sendStatus(200);
+
+    // TODO: DM user that installed the bot to tell them we're gtg
   }).catch(function(err) {
     res.sendStatus(500);
   });

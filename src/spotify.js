@@ -6,38 +6,63 @@ module.exports = {
   auth: auth,
   authCodeGrant: authCodeGrant,
   client: createClient(),
+  getPlaylist: function(team_id, playlist_id) {
+    var bot_spotify_username = db.bot_spotify_username.get(team_id);
+
+    auth(team_id, bot_spotify_username).then(function(client) {
+      client.getPlaylist(bot_spotify_username, playlist_id).then(function(data) {
+        console.log('playlist', data);
+        resolve(data);
+      }).catch(function(err) {
+        console.log('addTracksToPlaylist error:', err);
+        reject(err);
+      });
+    });
+  },
+  addTracksToPlaylist: function(team_id, playlist_id, track_uris) {
+    return new Promise(function(resolve, reject) {
+      var bot_spotify_username = db.bot_spotify_username.get(team_id);
+
+      auth(team_id, bot_spotify_username).then(function(client) {
+        client.addTracksToPlaylist(bot_spotify_username, playlist_id, track_uris).then(function(data) {
+          resolve(data);
+        }).catch(function(err) {
+          console.log('addTracksToPlaylist error:', err);
+          reject(err);
+        });
+      });
+    });
+  },
   createPlaylist: function(team_id, channel_id, playlist_name) {
     return new Promise(function(resolve, reject) {
       var playlist_id = db.playlist_id.get(team_id, channel_id);
+      var bot_spotify_username = db.bot_spotify_username.get(team_id);
 
       // See if it has already been created
       if (playlist_id) {
-        var existing_playlist_name = db.playlist_name.get(team_id, channel_id);
-        var existing_playlist_uri = db.playlist_uri.get(team_id, channel_id);
-        // TODO: would be better not to have to fake this so badly
-        resolve({
-          body: {
-            already_exists: true,
-            name: existing_playlist_name,
-            uri: existing_playlist_uri,
-          }
+        auth(team_id, bot_spotify_username).then(function(client) {
+          client.getPlaylist(bot_spotify_username, playlist_name, { public: true }).then(function(data) {
+            var playlist_name = data.body.name;
+            var playlist_uri = data.body.uri;
+
+            resolve({
+              body: {
+                already_exists: true,
+                name: existing_playlist_name,
+                uri: existing_playlist_uri,
+              }
+            });
+          });
         });
+
         return;
       }
-
-      var bot_spotify_username = process.env.SPOTIFY_USERNAME;
 
       auth(team_id, bot_spotify_username).then(function(client) {
         client.createPlaylist(bot_spotify_username, playlist_name, { public: true }).then(function(data) {
           console.log('createPlaylist success:', data.body);
           var playlist_id = data.body.id;
           db.playlist_id.set(team_id, channel_id, playlist_id);
-
-          var playlist_name = data.body.name;
-          db.playlist_name.set(team_id, channel_id, playlist_name);
-
-          var playlist_uri = data.body.uri;
-          db.playlist_uri.set(team_id, channel_id, playlist_uri);
 
           resolve(data);
         }).catch(function(err) {
@@ -70,7 +95,29 @@ function auth(team_id, user_id) {
     var refresh_token = db.refresh_token.get(team_id, user_id);
     console.log('auth access_token for', user_id, 'is', access_token);
     var client = createClient(access_token, refresh_token);
-    resolve(client);
+    var bot_spotify_username = db.bot_spotify_username.get(team_id);
+
+    // Test the auth
+    // TODO: replace this with something that looks at expires
+    client.getUser(bot_spotify_username).then(function() {
+      resolve(client);
+    }).catch(function(err) {
+      console.log('getUser error:', err);
+
+      var new_client = createClient();
+      new_client.setRefreshToken(refresh_token);
+      new_client.refreshAccessToken().then(function(data) {
+        console.log('refreshAccessToken success:', data);
+
+        var new_access_token = data.body.access_token;
+        db.access_token.set(team_id, user_id, new_access_token);
+        new_client.setAccessToken(new_access_token);
+        resolve(new_client);
+      }).catch(function(err) {
+        console.log('refreshAccessToken error:', err);
+        reject(err);
+      });
+    });
   });
 }
 
